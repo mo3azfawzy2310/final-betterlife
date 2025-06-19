@@ -17,6 +17,8 @@ android {
     }
 
     compileOptions {
+        // ✅ تفغيل desugaring لدعم flutter_local_notifications
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -34,4 +36,9 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // ✅ إضافة desugar_jdk_libs
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }

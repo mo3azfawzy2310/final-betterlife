@@ -48,7 +48,7 @@ class DoctorItem extends StatelessWidget {
               margin: const EdgeInsets.only(left: 30),
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  image: DecorationImage(image: AssetImage(DoctorImage))),
+                  image: DecorationImage(image: NetworkImage(DoctorImage))),
             ),
             const SizedBox(
               height: 10,

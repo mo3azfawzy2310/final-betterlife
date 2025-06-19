@@ -8,8 +8,40 @@ class AuthProvider with ChangeNotifier {
 
   String? get token => _token;
 
+  Future<bool> register(String displayName, String email, String password,
+      String phoneNumber, String userName) async {
+    final url =
+        Uri.parse("http://betterlife.runasp.net/api/Authentication/Register");
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "displayName": displayName,
+          "email": email,
+          "password": password,
+          "phoneNumber": phoneNumber,
+          "userName": userName,
+          "role": "Patient"
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print("Registration failed: ${response.body}");
+        return false;
+      }
+    } catch (e) {
+      print("Registration exception: $e");
+      return false;
+    }
+  }
+
   Future<bool> login(String email, String password) async {
-    final url = Uri.parse("https://betterlife.runasp.net/api/Authentication/Login");
+    final url =
+        Uri.parse("https://betterlife.runasp.net/api/Authentication/Login");
 
     try {
       final response = await http.post(

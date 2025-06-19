@@ -34,17 +34,22 @@ class DialogUtils {
                     color: Color(0xFFF5F8FF),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.check,color: Color(0xFF199A8E), size: 50),
+                  child: const Icon(Icons.check,
+                      color: Color(0xFF199A8E), size: 50),
                 ),
                 const SizedBox(height: 20),
                 Text(
                   title,
-                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                  style: const TextStyle(
+                      fontSize: 22, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 10),
                 Text(
                   message,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black54),
+                  style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black54),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 30),
@@ -62,12 +67,39 @@ class DialogUtils {
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: Text(buttonText, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
+                    child: Text(buttonText,
+                        style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white)),
                   ),
                 ),
               ],
             ),
           ),
+        );
+      },
+    );
+  }
+
+  static void showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text('Error'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
         );
       },
     );

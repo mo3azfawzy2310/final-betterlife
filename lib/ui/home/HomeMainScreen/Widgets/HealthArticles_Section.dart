@@ -1,9 +1,12 @@
+import 'package:better_life/models/home_model.dart';
 import 'package:better_life/ui/home/HomeMainScreen/Widgets/HealthArticlesListView.dart';
 import 'package:flutter/material.dart';
 
 class HealthArticles_Section extends StatelessWidget {
-  const HealthArticles_Section({super.key, required this.SeeAll_onPressed});
+  const HealthArticles_Section(
+      {super.key, required this.SeeAll_onPressed, required this.articles});
   final VoidCallback SeeAll_onPressed;
+  final List<HealthArticleModel> articles;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -21,7 +24,7 @@ class HealthArticles_Section extends StatelessWidget {
                     onPressed: SeeAll_onPressed, child: const Text("See All"))),
           ],
         ),
-       const Healtharticleslistview()
+        const Healtharticleslistview()
       ],
     );
   }

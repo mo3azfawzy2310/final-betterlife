@@ -1,3 +1,5 @@
+import 'package:better_life/core/cach_data/app_shared_preferences.dart';
+import 'package:better_life/models/user_model.dart';
 import 'package:better_life/providers/authProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -55,6 +57,7 @@ final ThemeData appTheme = ThemeData(
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService.initialize();
+  AppPreferences().init();
 
   runApp(
     MultiProvider(
@@ -81,7 +84,22 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   Locale _locale = const Locale('en');
+  @override
+  void initState() {
+    gettoken();
+    super.initState();
+  }
 
+  void gettoken() async {
+    final user = await AppPreferences().getModel<UserModel>(
+      'userModel',
+      UserModel.fromJson,
+    );
+
+    token = user?.token;
+  }
+
+  String? token;
   void setLocale(Locale locale) {
     setState(() {
       _locale = locale;
@@ -111,9 +129,10 @@ class _MyAppState extends State<MyApp> {
         VerificationScreen.routName: (_) => VerificationScreen(userInput: ''),
         CreateNewPasswordScreen.routeName: (_) => CreateNewPasswordScreen(),
         profileScreen.routeName: (_) => profileScreen(),
-        ChatScreenBot.routeName:(_)=> ChatScreenBot(),
+        ChatScreenBot.routeName: (_) => ChatScreenBot(),
       },
-      initialRoute: SplashScreen.routeName,
+      initialRoute:
+          token != null ? HomeScreen.routeName : SplashScreen.routeName,
     );
   }
 }

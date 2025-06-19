@@ -3,7 +3,9 @@ import 'package:better_life/ui/home/HomeMainScreen/ScheduleScreen.dart';
 import 'package:better_life/ui/home/messagesTap/messageScreen.dart';
 import 'package:better_life/ui/home/pillReminder/pillReminderScreen.dart';
 import 'package:better_life/ui/home/profileScreen/profileScreen.dart';
+import 'package:better_life/ui/logic/home/homecubit_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = "Home-Screen";
@@ -18,22 +20,23 @@ class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 0;
 
   final List<Widget> pages = [
-   const Homemainscreen(),
-   const MessagesScreen(),
-   const Schedulescreen(),
+    BlocProvider(
+      create: (context) => HomecubitCubit()..getAllDoctorsAndArticles(),
+      child: Homemainscreen(),
+    ),
+    const MessagesScreen(),
+    const Schedulescreen(),
     const PillReminderScreen(),
-   const profileScreen(),
-
+    const profileScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: pages[selectedIndex],
-
       bottomNavigationBar: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration:const  BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
           boxShadow: [
             BoxShadow(color: Colors.black12, blurRadius: 4),
@@ -75,9 +78,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.all(10),
                 decoration: isSelected
                     ? BoxDecoration(
-                  color: const Color(0xFF199A8E).withOpacity(0.15),
-                  shape: BoxShape.circle,
-                )
+                        color: const Color(0xFF199A8E).withOpacity(0.15),
+                        shape: BoxShape.circle,
+                      )
                     : null,
                 child: Icon(
                   icon,
