@@ -78,9 +78,9 @@ class DoctorItem extends StatelessWidget {
                 const SizedBox(
                   width: 5,
                 ),
-                Distancefromdoctor(
-                  distance: distance,
-                )
+                // Distancefromdoctor(
+                //   distance: distance,
+                // )
               ],
             )
           ],

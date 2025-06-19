@@ -36,7 +36,7 @@ class Topdoctorsscreen extends StatelessWidget {
             DoctorName: "Dr ALi Ebrahim",
             DoctorSpecality: "chardiologist",
             DoctorRating: "4.7",
-            distance: "800",
+        
           );
         },
       ),

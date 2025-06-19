@@ -11,7 +11,8 @@ class Recommendeddoctoritem extends StatelessWidget {
       required this.DoctorName,
       required this.DoctorSpeciality,
       required this.DoctorRating,
-      required this.distance, required this.onpressed});
+      required this.distance,
+      required this.onpressed});
   final String DoctorImage;
   final String DoctorName;
   final String DoctorSpeciality;
@@ -60,7 +61,8 @@ class Recommendeddoctoritem extends StatelessWidget {
               ),
               Text(
                 DoctorName,
-                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+                style:
+                    const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
               ),
               const SizedBox(
                 height: 5,
@@ -72,11 +74,10 @@ class Recommendeddoctoritem extends StatelessWidget {
                     fontSize: 14,
                     color: Colors.grey),
               ),
-            const   SizedBox(
+              const SizedBox(
                 width: 180,
                 child: Divider(
                   color: Colors.grey,
-                
                 ),
               ),
               const SizedBox(
@@ -90,9 +91,9 @@ class Recommendeddoctoritem extends StatelessWidget {
                   const SizedBox(
                     width: 5,
                   ),
-                  Distancefromdoctor(
-                    distance: distance,
-                  )
+                  // Distancefromdoctor(
+                  //   distance: distance,
+                  // )
                 ],
               )
             ],

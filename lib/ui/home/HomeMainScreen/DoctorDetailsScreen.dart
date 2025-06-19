@@ -35,9 +35,10 @@ class Doctordetailsscreen extends StatelessWidget {
               DoctorName: "Dr ALi Ebrahim",
               DoctorSpecality: "chardiologist",
               DoctorRating: "4.7",
-              distance: "800",
             ),
-            const SizedBox(height: 20,),
+            const SizedBox(
+              height: 20,
+            ),
             const Weekdayslistview(),
             const SizedBox(
               height: 50,
@@ -55,17 +56,19 @@ class Doctordetailsscreen extends StatelessWidget {
                     height: 75,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        color:const  Color(0xffE8F3F1)),
+                        color: const Color(0xffE8F3F1)),
                     child: const Image(
                         image: AssetImage(
                             "assets/images/homeScreen/Stroke 4.png")),
                   ),
                 ),
-               const  SizedBox(
-                  width: 20,),
+                const SizedBox(
+                  width: 20,
+                ),
                 InkWell(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
                       return const Appointmentscreen();
                     }));
                   },
@@ -74,11 +77,16 @@ class Doctordetailsscreen extends StatelessWidget {
                     width: 265,
                     height: 60,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color:const  Color(0xff199A8E)
+                        borderRadius: BorderRadius.circular(50),
+                        color: const Color(0xff199A8E)),
+                    child: const Text(
+                      "Book Appointment",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600),
+                      textAlign: TextAlign.center,
                     ),
-                    child: const Text("Book Appointment",style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.w600),textAlign: TextAlign.center,),
-                  
                   ),
                 )
               ],

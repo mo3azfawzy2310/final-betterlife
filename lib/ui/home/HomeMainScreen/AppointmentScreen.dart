@@ -36,7 +36,7 @@ class Appointmentscreen extends StatelessWidget {
               DoctorName: "Dr ALi Ebrahim",
               DoctorSpecality: "chardiologist",
               DoctorRating: "4.7",
-              distance: "800",
+             
             ),
             const SizedBox(
               height: 5,
