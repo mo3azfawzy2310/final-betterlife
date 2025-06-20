@@ -6,7 +6,6 @@ import 'package:better_life/ui/home/profileScreen/profileScreen.dart';
 import 'package:better_life/ui/logic/home/homecubit_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 class HomeScreen extends StatefulWidget {
   static const String routeName = "Home-Screen";
 
@@ -18,7 +17,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 0;
-
   final List<Widget> pages = [
     BlocProvider(
       create: (context) => HomecubitCubit()..getAllDoctorsAndArticles(),
@@ -27,9 +25,8 @@ class _HomeScreenState extends State<HomeScreen> {
     const MessagesScreen(),
     const Schedulescreen(),
     const PillReminderScreen(),
-    const profileScreen(),
+    const ProfileScreen(),
   ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

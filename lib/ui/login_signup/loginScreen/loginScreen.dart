@@ -5,8 +5,7 @@ import 'package:better_life/ui/login_signup/signupScreen/signupScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:provider/provider.dart';
-import '../../../providers/authProvider.dart';
+
 import '../../../utils/ButtonStyles.dart';
 import '../../home/homeScreen.dart';
 import '../buildTextField.dart';
@@ -36,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
         listener: (context, state) {
           if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Email or password is incorrect")),
+              const SnackBar(content: Text("Email or password is incorrect")),
             );
           }
           if (state is AuthSuccess) {
@@ -124,7 +123,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => ForgotPassword()));
+                                      builder: (context) =>
+                                      const ForgotPassword()));
                             },
                             child: Text(
                               "Forgot Password?",
@@ -140,8 +140,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: () async {
                               if (formKey.currentState!.validate()) {
                                 context.read<AuthCubit>().loginUser(
-                                    email: emailController.text,
-                                    password: passwordController.text);
+                                  email: emailController.text.trim(),
+                                  password: passwordController.text.trim(),
+                                );
                               }
                             },
                             style: ButtonStyles.primaryButtonStyle,

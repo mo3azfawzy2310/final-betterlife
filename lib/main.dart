@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/cach_data/app_shared_preferences.dart';
-import 'models/user_model.dart';
 import 'providers/authProvider.dart';
 import 'providers/pill_reminder_prov.dart';
 import 'ui/home/homeScreen.dart';
@@ -54,11 +52,14 @@ void main() async {
   await NotificationService.initialize();
   await AppPreferences().init();
 
+  final authProvider = AuthProvider();
+  await authProvider.loadToken();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => PillReminderProvider()),
-        ChangeNotifierProvider(create: (_) => AuthProvider()..loadToken()),
+        ChangeNotifierProvider<AuthProvider>.value(value: authProvider),
       ],
       child: const MyApp(),
     ),
@@ -84,7 +85,7 @@ class MyApp extends StatelessWidget {
         HomeScreen.routeName: (_) => HomeScreen(),
         VerificationScreen.routName: (_) => VerificationScreen(userInput: ''),
         CreateNewPasswordScreen.routeName: (_) => CreateNewPasswordScreen(),
-        profileScreen.routeName: (_) => profileScreen(),
+        ProfileScreen.routeName: (_) => const ProfileScreen(),
         ChatScreenBot.routeName: (_) => ChatScreenBot(),
       },
       initialRoute:

@@ -24,7 +24,7 @@ class AuthProvider with ChangeNotifier {
           "password": password,
           "phoneNumber": phoneNumber,
           "userName": userName,
-          "role": "Patient"
+          "role": "Patient",
         }),
       );
 
@@ -45,7 +45,7 @@ class AuthProvider with ChangeNotifier {
         body: jsonEncode({
           "email": email,
           "password": password,
-          "role": "Patient"
+          "role": "Patient",
         }),
       );
 
@@ -86,6 +86,7 @@ class AuthProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('token');
     _displayName = prefs.getString('displayName');
+    print('Loaded token: $_token, displayName: $_displayName'); // للتأكد
     notifyListeners();
   }
 }

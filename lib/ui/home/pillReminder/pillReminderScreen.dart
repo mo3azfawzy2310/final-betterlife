@@ -9,16 +9,13 @@ class PillReminderScreen extends StatefulWidget {
   @override
   State<PillReminderScreen> createState() => _PillReminderScreenState();
 }
-
 class _PillReminderScreenState extends State<PillReminderScreen> {
   final TextEditingController pillNameController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
   final TextEditingController durationController = TextEditingController();
   final TextEditingController intervalController = TextEditingController();
   TimeOfDay? selectedStartTime;
-
-  int? editingIndex; // هذا لتخزين العنصر الذي نعدل عليه، null يعني إضافة جديدة
-
+  int? editingIndex;
   void pickStartTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
@@ -30,7 +27,6 @@ class _PillReminderScreenState extends State<PillReminderScreen> {
       });
     }
   }
-
   void savePlan() {
     final name = pillNameController.text.trim();
     final amount = int.tryParse(amountController.text.trim()) ?? 0;
@@ -51,16 +47,12 @@ class _PillReminderScreenState extends State<PillReminderScreen> {
         final reminderTime = startTime.add(
           Duration(days: day, hours: dose * interval),
         );
-
-        // جدولة الإشعار هنا مباشرة
         NotificationService.scheduleNotification(
           id: reminderTime.millisecondsSinceEpoch ~/ 1000,
           title: 'Pill Reminder',
           body: 'It\'s time to take your pill: $name',
           scheduledDateTime: reminderTime,
         );
-
-        // إضافة التذكير للـ Provider
         Provider.of<PillReminderProvider>(context, listen: false).addReminder(
           PillReminder(
             name: name,
@@ -72,17 +64,14 @@ class _PillReminderScreenState extends State<PillReminderScreen> {
         );
       }
     }
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Plan added for $name")),
     );
-
     pillNameController.clear();
     amountController.clear();
     durationController.clear();
     intervalController.clear();
   }
-
   void clearFields() {
     pillNameController.clear();
     amountController.clear();
@@ -92,7 +81,6 @@ class _PillReminderScreenState extends State<PillReminderScreen> {
       selectedStartTime = null;
     });
   }
-
   void startEditing(int index, PillReminder reminder) {
     setState(() {
       editingIndex = index;
