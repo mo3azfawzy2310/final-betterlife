@@ -27,6 +27,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // ندي شوية وقت لعرض اللوجو قبل ما ننتقل
     await Future.delayed(const Duration(seconds: 3));
+    
+    if (!mounted) return;
 
     if (token != null && token.isNotEmpty) {
       // تم تسجيل الدخول قبل كده

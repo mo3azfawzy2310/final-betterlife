@@ -17,7 +17,12 @@ class DioConsumer implements ApiConsumer {
       ..baseUrl = EndpointConstants.baseUrl
       ..responseType = ResponseType.json
       ..connectTimeout = const Duration(seconds: 30)
-      ..receiveTimeout = const Duration(seconds: 30);
+      ..receiveTimeout = const Duration(seconds: 30)
+      ..followRedirects = true
+      ..maxRedirects = 5
+      ..validateStatus = (status) {
+        return status! < 500; // Accept all status codes less than 500
+      };
 
     client.interceptors.add(AppInterceptors());
 
@@ -85,22 +90,46 @@ class DioConsumer implements ApiConsumer {
   Future<dynamic> post(
     String path, {
     Map<String, dynamic>? body,
+    Map<String, dynamic>? queryParameters,
     Map<String, dynamic>? headers,
   }) async {
     try {
       final response = await client.post(
         path,
         data: body,
-        options: Options(headers: headers),
+        queryParameters: queryParameters,
+        options: Options(
+          headers: headers,
+          followRedirects: true,
+          validateStatus: (status) => status! < 500,
+        ),
       );
 
+      print('🔍 POST response status: ${response.statusCode} for $path');
+      
+      // Handle 302 redirect as success
+      if (response.statusCode == 302) {
+        print('🔄 Redirect detected to: ${response.headers['location']}');
+        return {'success': true, 'redirected': true};
+      }
+
       if (response.data == null || response.data.toString().isEmpty) {
-        //////////
+        print('⚠️ Empty response data for POST $path');
+        return {'success': true, 'empty': true};
       }
 
       return response.data;
     } on DioException catch (error) {
-      ///////////
+      print('❌ DioException in POST $path: ${error.message}');
+      print('❌ DioError type: ${error.type}');
+      print('❌ DioError status code: ${error.response?.statusCode}');
+      if (error.response?.data != null) {
+        print('❌ DioError response data: ${error.response?.data}');
+      }
+      rethrow;
+    } catch (e) {
+      print('❌ Unexpected error in POST $path: $e');
+      rethrow;
     }
   }
 
@@ -108,12 +137,14 @@ class DioConsumer implements ApiConsumer {
   Future<dynamic> put(
     String path, {
     Map<String, dynamic>? body,
+    Map<String, dynamic>? queryParameters,
     Map<String, dynamic>? headers,
   }) async {
     try {
       final response = await client.put(
         path,
         data: body,
+        queryParameters: queryParameters,
         options: Options(headers: headers),
       );
 
@@ -128,10 +159,15 @@ class DioConsumer implements ApiConsumer {
   }
 
   @override
-  Future<dynamic> delete(String path, {Map<String, dynamic>? headers}) async {
+  Future<dynamic> delete(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Map<String, dynamic>? headers,
+  }) async {
     try {
       final response = await client.delete(
         path,
+        queryParameters: queryParameters,
         options: Options(headers: headers),
       );
 

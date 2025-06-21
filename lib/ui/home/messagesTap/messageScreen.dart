@@ -2,31 +2,32 @@ import 'package:better_life/ChatBot/ChatScreenBot.dart';
 import 'package:better_life/ui/home/messagesTap/ChatScreen.dart';
 import 'package:flutter/material.dart';
 
-class MessagesScreen extends StatelessWidget {
-  const MessagesScreen({super.key});
+// For backward compatibility with the HomeScreen reference
+class MessageScreen extends StatelessWidget {
+  const MessageScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> messages = [
       {
         'name': 'Dr. Ali Ebrahim',
-        'lastMessage': 'I don’t have any fever, but headache...',
+        'lastMessage': "I don't have any fever, but headache...",
         'time': '10:24',
-        'image': 'assets/images/doctor1.png',
+        'image': 'assets/images/homeScreen/Doctor.png',
         'isRead': false,
       },
       {
         'name': 'Dr. Khaled Mansy',
         'lastMessage': 'Hello, How can I help you?',
         'time': '09:04',
-        'image': 'assets/images/doctor2.png',
+        'image': 'assets/images/homeScreen/Doctor.png',
         'isRead': true,
       },
       {
         'name': 'Dr. Saad Ahmed',
         'lastMessage': 'Do you have fever?',
         'time': '08:57',
-        'image': 'assets/images/doctor3.png',
+        'image': 'assets/images/homeScreen/Doctor.png',
         'isRead': true,
       },
     ];

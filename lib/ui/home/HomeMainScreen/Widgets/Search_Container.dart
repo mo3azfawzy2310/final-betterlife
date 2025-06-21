@@ -13,7 +13,7 @@ class Search_Container extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return const Finddoctorsscreen();
+          return const FindDoctorsScreen();
         }));
       },
       child: Container(

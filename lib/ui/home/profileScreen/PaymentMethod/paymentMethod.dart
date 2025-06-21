@@ -52,10 +52,12 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
 
       await Stripe.instance.presentPaymentSheet();
 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Payment completed successfully!')),
       );
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Payment failed: $e')),
       );

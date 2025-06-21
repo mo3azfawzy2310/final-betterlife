@@ -3,10 +3,15 @@ import 'package:better_life/ui/home/HomeMainScreen/Widgets/HealthArticlesListVie
 import 'package:flutter/material.dart';
 
 class HealthArticles_Section extends StatelessWidget {
-  const HealthArticles_Section(
-      {super.key, required this.SeeAll_onPressed, required this.articles});
+  const HealthArticles_Section({
+    Key? key,
+    required this.SeeAll_onPressed,
+    required this.articles,
+  }) : super(key: key);
+  
   final VoidCallback SeeAll_onPressed;
   final List<HealthArticleModel> articles;
+  
   @override
   Widget build(BuildContext context) {
     return Column(

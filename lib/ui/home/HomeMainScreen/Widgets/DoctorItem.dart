@@ -13,7 +13,7 @@ class DoctorItem extends StatelessWidget {
       required this.DoctorRating,
       required this.distance,
       required this.onpressed});
-  final String DoctorImage;
+  final String? DoctorImage;
   final String DoctorName;
   final String DoctorSpeciality;
   final String DoctorRating;
@@ -48,7 +48,11 @@ class DoctorItem extends StatelessWidget {
               margin: const EdgeInsets.only(left: 30),
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  image: DecorationImage(image: NetworkImage(DoctorImage))),
+                  image: DecorationImage(
+                    image: DoctorImage != null
+                        ? NetworkImage(DoctorImage!)
+                        : const AssetImage('assets/images/homeScreen/Doctor.png') as ImageProvider,
+                  )),
             ),
             const SizedBox(
               height: 10,

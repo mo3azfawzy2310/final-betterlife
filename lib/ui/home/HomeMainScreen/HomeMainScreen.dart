@@ -8,10 +8,12 @@ import 'package:better_life/ui/home/HomeMainScreen/Widgets/TopDectors_Section.da
 import 'package:better_life/ui/home/HomeMainScreen/Widgets/TopSection.dart';
 import 'package:better_life/ui/home/HomeMainScreen/Widgets/Search_Container.dart';
 
+import 'package:better_life/ui/logic/appointment/appointment_cubit.dart';
+import 'package:better_life/ui/home/HomeMainScreen/DoctorDetailsScreen.dart';
 import 'package:better_life/ui/logic/home/homecubit_cubit.dart';
 
 class Homemainscreen extends StatelessWidget {
-  const Homemainscreen({super.key});
+  const Homemainscreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +57,34 @@ class Homemainscreen extends StatelessWidget {
                                 return const Topdoctorsscreen();
                               },
                             ));
+                          },
+                          onDoctorSelected: (doctor) async {
+                            final result = await Navigator.push(
+                              context, 
+                              MaterialPageRoute(
+                                builder: (context) => BlocProvider(
+                                  create: (context) => AppointmentCubit(),
+                                  child: DoctorDetailsScreen(doctor: doctor),
+                                ),
+                              ),
+                            );
+                            
+                            // If booking was successful, navigate to the schedule tab
+                            if (result == true) {
+                              // Find the parent HomeScreen to switch tabs
+                              Navigator.of(context).pop(); // Go back to home screen
+                              
+                              // Use delayed execution to ensure we're back on the home screen
+                              Future.delayed(Duration.zero, () {
+                                // Show a message to the user that the booking was successful
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Appointment booked successfully! Navigate to Schedule tab to see your booking.'),
+                                    duration: Duration(seconds: 3),
+                                  ),
+                                );
+                              });
+                            }
                           },
                         ),
                         const SizedBox(height: 15),

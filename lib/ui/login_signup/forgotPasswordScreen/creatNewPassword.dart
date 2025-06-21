@@ -111,6 +111,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                         const SnackBar(content: Text('Password created successfully')),
                       );
                       Future.delayed(const Duration(seconds: 1),(){
+                        if (!mounted) return;
                         Navigator.pop(context);
                       });
                     }

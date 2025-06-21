@@ -1,13 +1,21 @@
 // ignore_for_file: camel_case_types
 
-import 'package:better_life/models/home_model.dart';
+import 'package:better_life/models/doctor_model.dart';
 import 'package:better_life/ui/home/HomeMainScreen/Widgets/TopDoctorsListView.dart';
 import 'package:flutter/material.dart';
 
 class TopDectors_Section extends StatelessWidget {
-  const TopDectors_Section({super.key, required this.SeeALl_onPressed, required this.doctors});
+  const TopDectors_Section({
+    super.key, 
+    required this.SeeALl_onPressed, 
+    required this.doctors,
+    this.onDoctorSelected,
+  });
+  
   final VoidCallback SeeALl_onPressed;
-final List <DoctorModel>  doctors;
+  final List<DoctorModel> doctors;
+  final Function(DoctorModel doctor)? onDoctorSelected;
+  
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -26,7 +34,10 @@ final List <DoctorModel>  doctors;
           ],
         ),
         const SizedBox(height: 20,),
-         Topdoctorslistview( doctors: doctors,)
+        Topdoctorslistview(
+          doctors: doctors,
+          onDoctorSelected: onDoctorSelected,
+        )
       ],
     );
   }

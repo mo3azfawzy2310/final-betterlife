@@ -1,0 +1,57 @@
+part of 'doctors_cubit.dart';
+
+abstract class DoctorsState extends Equatable {
+  const DoctorsState();
+
+  @override
+  List<Object> get props => [];
+}
+
+class DoctorsInitial extends DoctorsState {}
+
+// All doctors states
+class DoctorsLoading extends DoctorsState {}
+
+class DoctorsLoaded extends DoctorsState {
+  final List<DoctorModel> doctors;
+
+  const DoctorsLoaded(this.doctors);
+
+  @override
+  List<Object> get props => [doctors];
+}
+
+class DoctorsError extends DoctorsState {
+  final String message;
+
+  const DoctorsError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+// Single doctor states
+class DoctorLoading extends DoctorsState {}
+
+class DoctorLoaded extends DoctorsState {
+  final DoctorModel doctor;
+  DoctorLoaded(this.doctor);
+}
+
+class DoctorError extends DoctorsState {
+  final String message;
+  DoctorError(this.message);
+}
+
+// Favorite doctors states
+class FavoriteDoctorsLoading extends DoctorsState {}
+
+class FavoriteDoctorsLoaded extends DoctorsState {
+  final List<DoctorModel> favoriteDoctors;
+  FavoriteDoctorsLoaded(this.favoriteDoctors);
+}
+
+class FavoriteDoctorsError extends DoctorsState {
+  final String message;
+  FavoriteDoctorsError(this.message);
+} 

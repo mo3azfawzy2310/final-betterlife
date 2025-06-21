@@ -1,14 +1,16 @@
-import 'package:better_life/models/home_model.dart';
+import 'package:better_life/models/doctor_model.dart';
 import 'package:better_life/ui/home/HomeMainScreen/DoctorDetailsScreen.dart';
 import 'package:better_life/ui/home/HomeMainScreen/Widgets/DoctorItem.dart';
 import 'package:flutter/material.dart';
 
 class Topdoctorslistview extends StatelessWidget {
   final List<DoctorModel> doctors;
+  final Function(DoctorModel doctor)? onDoctorSelected;
 
   const Topdoctorslistview({
     Key? key,
     required this.doctors,
+    this.onDoctorSelected,
   }) : super(key: key);
 
   @override
@@ -24,17 +26,23 @@ class Topdoctorslistview extends StatelessWidget {
             padding: const EdgeInsets.only(right: 10),
             child: DoctorItem(
               onpressed: () {
-                Navigator.push(context, MaterialPageRoute(
-                  builder: (context) {
-                    return Doctordetailsscreen(); // لو حابب تمرر الدكتور
-                  },
-                ));
+                if (onDoctorSelected != null) {
+                  // Use the callback if provided
+                  onDoctorSelected!(doctor);
+                } else {
+                  // Default navigation behavior
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) {
+                      return DoctorDetailsScreen(doctor: doctor);
+                    },
+                  ));
+                }
               },
               DoctorImage: doctor.pictureUrl,
               DoctorName: doctor.name,
               DoctorSpeciality: doctor.speciality,
-              DoctorRating: doctor.rate.toStringAsFixed(1),
-              distance: "800", // لو عندك قيمة distance حقيقية حطها هنا
+              DoctorRating: doctor.rating.toStringAsFixed(1),
+              distance: "800", // If you have a real distance value, use it here
             ),
           );
         },

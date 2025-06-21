@@ -1,0 +1,84 @@
+part of 'appointment_cubit.dart';
+
+abstract class AppointmentState extends Equatable {
+  const AppointmentState();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class AppointmentInitial extends AppointmentState {}
+
+class AppointmentLoading extends AppointmentState {}
+
+class AppointmentActionLoading extends AppointmentState {}
+
+class AppointmentLoaded extends AppointmentState {
+  final List<AppointmentModel> appointments;
+
+  const AppointmentLoaded(this.appointments);
+
+  @override
+  List<Object?> get props => [appointments];
+}
+
+// For backward compatibility
+class AppointmentsLoaded extends AppointmentState {
+  final List<AppointmentModel> appointments;
+
+  const AppointmentsLoaded(this.appointments);
+
+  @override
+  List<Object?> get props => [appointments];
+}
+
+class AppointmentBooked extends AppointmentState {
+  final List<AppointmentModel> appointments;
+
+  const AppointmentBooked(this.appointments);
+
+  @override
+  List<Object?> get props => [appointments];
+}
+
+class AppointmentActionSuccess extends AppointmentState {
+  final String message;
+
+  const AppointmentActionSuccess(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class AppointmentError extends AppointmentState {
+  final String message;
+
+  const AppointmentError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+// You may not need the following states if the UI doesn't have separate pages
+// for single appointments or available slots. If you do, they can be added back.
+
+// class SingleAppointmentLoaded extends AppointmentState {
+//   final AppointmentModel appointment;
+//   const SingleAppointmentLoaded(this.appointment);
+//   @override
+//   List<Object> get props => [appointment];
+// }
+
+// class AvailableDaysLoaded extends AppointmentState {
+//   final List<Map<String, dynamic>> availableDays;
+//   const AvailableDaysLoaded(this.availableDays);
+//   @override
+//   List<Object> get props => [availableDays];
+// }
+
+// class AvailableTimesLoaded extends AppointmentState {
+//   final List<String> availableTimes;
+//   const AvailableTimesLoaded(this.availableTimes);
+//   @override
+//   List<Object> get props => [availableTimes];
+// } 

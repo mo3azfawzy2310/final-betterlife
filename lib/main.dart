@@ -4,7 +4,7 @@ import 'package:better_life/providers/authProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart'; // لازم تكون مشغل intl
+import 'package:better_life/l10n/app_localizations.dart'; // لازم تكون مشغل intl
 
 import 'package:better_life/providers/pill_reminder_prov.dart';
 import 'package:better_life/ui/home/homeScreen.dart';
@@ -16,7 +16,13 @@ import 'package:better_life/ui/login_signup/forgotPasswordScreen/verificationScr
 import 'package:better_life/ui/welcome_pages/onboardingScreen/onboardingScreen.dart';
 import 'package:better_life/ui/welcome_pages/splashScreen/splashScreen.dart';
 import 'package:better_life/ChatBot/ChatScreenBot.dart';
+import 'package:better_life/ui/debug/api_test_screen.dart';
+import 'package:better_life/ui/home/notifications/notifications_screen.dart';
+import 'package:better_life/ui/home/medical_records/medical_records_screen.dart';
 import 'Notifications/NotificationService.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:better_life/ui/logic/notifications/notifications_cubit.dart';
+import 'package:better_life/ui/logic/medical_records/medical_records_cubit.dart';
 
 final ThemeData appTheme = ThemeData(
   scaffoldBackgroundColor: Colors.white,
@@ -64,6 +70,8 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => PillReminderProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        BlocProvider(create: (_) => NotificationsCubit()),
+        BlocProvider(create: (_) => MedicalRecordsCubit()),
       ],
       child: const MyApp(),
     ),
@@ -96,7 +104,14 @@ class _MyAppState extends State<MyApp> {
       UserModel.fromJson,
     );
 
-    token = user?.token;
+    // Only set token if it's not null and not empty
+    if (user?.token != null && user!.token.isNotEmpty) {
+      token = user.token;
+      print('🔍 User logged in with token: ${user.token}');
+    } else {
+      token = null;
+      print('🔍 No valid token found, user needs to login');
+    }
   }
 
   String? token;
@@ -125,11 +140,14 @@ class _MyAppState extends State<MyApp> {
         OnboardingScreen.routeName: (_) => OnboardingScreen(),
         SignUpScreen.routeName: (_) => SignUpScreen(),
         LoginScreen.routeName: (_) => LoginScreen(),
-        HomeScreen.routeName: (_) => HomeScreen(),
+        HomeScreen.routeName: (_) => const HomeScreen(),
         VerificationScreen.routName: (_) => VerificationScreen(userInput: ''),
         CreateNewPasswordScreen.routeName: (_) => CreateNewPasswordScreen(),
-        profileScreen.routeName: (_) => profileScreen(),
+        ProfileScreen.routeName: (_) => const ProfileScreen(),
         ChatScreenBot.routeName: (_) => ChatScreenBot(),
+        '/api-test': (_) => const ApiTestScreen(),
+        NotificationsScreen.routeName: (_) => const NotificationsScreen(),
+        MedicalRecordsScreen.routeName: (_) => const MedicalRecordsScreen(),
       },
       initialRoute:
           token != null ? HomeScreen.routeName : SplashScreen.routeName,

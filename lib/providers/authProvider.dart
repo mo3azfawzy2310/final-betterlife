@@ -2,9 +2,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:better_life/core/cach_data/app_shared_preferences.dart';
+import 'package:better_life/models/user_model.dart';
+import 'package:better_life/core/services/google_auth_service.dart';
 
 class AuthProvider with ChangeNotifier {
   String? _token;
+  final GoogleAuthService _googleAuthService = GoogleAuthService();
 
   String? get token => _token;
 
@@ -50,19 +54,30 @@ class AuthProvider with ChangeNotifier {
         body: jsonEncode({
           "email": email,
           "password": password,
-          "role": "Patient" // ثابت لأن التطبيق للمريض فقط
+          "role": "Patient"
         }),
       );
 
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
+        
+        print("🔍 Login Response: $json");
 
-        _token = json['token'];
+        // Create UserModel with the response data
+        final user = UserModel.fromJson(json);
+        
+        // Save the complete user model using AppPreferences
+        await AppPreferences().saveModel<UserModel>(
+          'userModel',
+          user,
+          (u) => u.toJson(),
+        );
 
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', _token!);
-        await prefs.setString('displayName', json['displayName']);
-        await prefs.setString('email', json['email']);
+        _token = user.token;
+        
+        print("🔍 User saved: ${user.toJson()}");
+        print("🔍 Token: $_token");
+        print("🔍 Patient ID: ${user.patientId}");
 
         notifyListeners();
         return true;
@@ -78,16 +93,70 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> logout() async {
     _token = null;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token');
-    await prefs.remove('displayName');
-    await prefs.remove('email');
+    // Clear the user model from AppPreferences
+    await AppPreferences().removeData('userModel');
     notifyListeners();
   }
 
   Future<void> loadToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    _token = prefs.getString('token');
+    // Load user data from AppPreferences
+    final user = await AppPreferences().getModel<UserModel>(
+      'userModel',
+      UserModel.fromJson,
+    );
+    _token = user?.token;
     notifyListeners();
+  }
+
+  // Google Login
+  Future<bool> googleLogin(String idToken) async {
+    try {
+      final user = await _googleAuthService.googleLogin(idToken);
+      
+      // Save the complete user model using AppPreferences
+      await AppPreferences().saveModel<UserModel>(
+        'userModel',
+        user,
+        (u) => u.toJson(),
+      );
+
+      _token = user.token;
+      
+      print("🔍 Google Login - User saved: ${user.toJson()}");
+      print("🔍 Google Login - Token: $_token");
+      print("🔍 Google Login - Patient ID: ${user.patientId}");
+
+      notifyListeners();
+      return true;
+    } catch (e) {
+      print("Google login exception: $e");
+      return false;
+    }
+  }
+
+  // Google Signup
+  Future<bool> googleSignup(String idToken, String username) async {
+    try {
+      final user = await _googleAuthService.googleSignup(idToken, username);
+      
+      // Save the complete user model using AppPreferences
+      await AppPreferences().saveModel<UserModel>(
+        'userModel',
+        user,
+        (u) => u.toJson(),
+      );
+
+      _token = user.token;
+      
+      print("🔍 Google Signup - User saved: ${user.toJson()}");
+      print("🔍 Google Signup - Token: $_token");
+      print("🔍 Google Signup - Patient ID: ${user.patientId}");
+
+      notifyListeners();
+      return true;
+    } catch (e) {
+      print("Google signup exception: $e");
+      return false;
+    }
   }
 }
