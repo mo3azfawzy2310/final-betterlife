@@ -1,6 +1,8 @@
 import 'package:better_life/core/cach_data/app_shared_preferences.dart';
+import 'package:better_life/core/services/auth_service.dart';
 import 'package:better_life/models/user_model.dart';
 import 'package:better_life/providers/authProvider.dart';
+import 'package:better_life/ui/logic/auth/auth_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -9,6 +11,7 @@ import 'package:better_life/l10n/app_localizations.dart'; // لازم تكون �
 import 'package:better_life/providers/pill_reminder_prov.dart';
 import 'package:better_life/ui/home/homeScreen.dart';
 import 'package:better_life/ui/home/profileScreen/profileScreen.dart';
+import 'package:better_life/ui/home/profileScreen/saved_blogs_screen.dart';
 import 'package:better_life/ui/login_signup/forgotPasswordScreen/creatNewPassword.dart';
 import 'package:better_life/ui/login_signup/loginScreen/loginScreen.dart';
 import 'package:better_life/ui/login_signup/signupScreen/signupScreen.dart';
@@ -62,14 +65,28 @@ final ThemeData appTheme = ThemeData(
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize services
+  await AppPreferences().init();
   await NotificationService.initialize();
-  AppPreferences().init();
+  
+  // Check if user is already authenticated
+  final authService = AuthService();
+  final isLoggedIn = await authService.isLoggedIn();
+  
+  print('🔍 User authentication status: ${isLoggedIn ? 'Logged In' : 'Not Logged In'}');
+  
+  if (isLoggedIn) {
+    final user = await authService.getCurrentUser();
+    print('🔍 Current user: ${user?.displayName}, token: ${user?.token != null ? 'Valid' : 'Invalid'}');
+  }
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => PillReminderProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        BlocProvider(create: (_) => AuthCubit()..checkAuthStatus()),
         BlocProvider(create: (_) => NotificationsCubit()),
         BlocProvider(create: (_) => MedicalRecordsCubit()),
       ],
@@ -92,29 +109,12 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   Locale _locale = const Locale('en');
+  
   @override
   void initState() {
-    gettoken();
     super.initState();
   }
 
-  void gettoken() async {
-    final user = await AppPreferences().getModel<UserModel>(
-      'userModel',
-      UserModel.fromJson,
-    );
-
-    // Only set token if it's not null and not empty
-    if (user?.token != null && user!.token.isNotEmpty) {
-      token = user.token;
-      print('🔍 User logged in with token: ${user.token}');
-    } else {
-      token = null;
-      print('🔍 No valid token found, user needs to login');
-    }
-  }
-
-  String? token;
   void setLocale(Locale locale) {
     setState(() {
       _locale = locale;
@@ -123,34 +123,48 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'BetterLife',
-      theme: appTheme,
-      locale: _locale,
-      supportedLocales: const [Locale('en'), Locale('ar')],
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      routes: {
-        SplashScreen.routeName: (_) => SplashScreen(),
-        OnboardingScreen.routeName: (_) => OnboardingScreen(),
-        SignUpScreen.routeName: (_) => SignUpScreen(),
-        LoginScreen.routeName: (_) => LoginScreen(),
-        HomeScreen.routeName: (_) => const HomeScreen(),
-        VerificationScreen.routName: (_) => VerificationScreen(userInput: ''),
-        CreateNewPasswordScreen.routeName: (_) => CreateNewPasswordScreen(),
-        ProfileScreen.routeName: (_) => const ProfileScreen(),
-        ChatScreenBot.routeName: (_) => ChatScreenBot(),
-        '/api-test': (_) => const ApiTestScreen(),
-        NotificationsScreen.routeName: (_) => const NotificationsScreen(),
-        MedicalRecordsScreen.routeName: (_) => const MedicalRecordsScreen(),
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, state) {
+        // Determine initial route based on auth state
+        String initialRoute = SplashScreen.routeName;
+        
+        if (state is AuthSuccess) {
+          initialRoute = HomeScreen.routeName;
+          print('🔍 User authenticated, redirecting to Home');
+        } else {
+          print('🔍 User not authenticated, redirecting to Splash');
+        }
+        
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'BetterLife',
+          theme: appTheme,
+          locale: _locale,
+          supportedLocales: const [Locale('en'), Locale('ar')],
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          routes: {
+            SplashScreen.routeName: (_) => SplashScreen(),
+            OnboardingScreen.routeName: (_) => OnboardingScreen(),
+            SignUpScreen.routeName: (_) => SignUpScreen(),
+            LoginScreen.routeName: (_) => LoginScreen(),
+            HomeScreen.routeName: (_) => const HomeScreen(),
+            VerificationScreen.routName: (_) => VerificationScreen(userInput: ''),
+            CreateNewPasswordScreen.routeName: (_) => CreateNewPasswordScreen(),
+            ProfileScreen.routeName: (_) => const ProfileScreen(),
+            ChatScreenBot.routeName: (_) => ChatScreenBot(),
+            SavedBlogsScreen.routeName: (_) => const SavedBlogsScreen(),
+            '/api-test': (_) => const ApiTestScreen(),
+            NotificationsScreen.routeName: (_) => const NotificationsScreen(),
+            MedicalRecordsScreen.routeName: (_) => const MedicalRecordsScreen(),
+          },
+          initialRoute: initialRoute,
+        );
       },
-      initialRoute:
-          token != null ? HomeScreen.routeName : SplashScreen.routeName,
     );
   }
 }

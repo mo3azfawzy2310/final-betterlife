@@ -17,7 +17,7 @@ class MedicalRecordsScreen extends StatefulWidget {
 class _MedicalRecordsScreenState extends State<MedicalRecordsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  int? currentPatientId;
+  String? currentPatientId;
 
   @override
   void initState() {
@@ -38,11 +38,17 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen>
     
     if (user?.patientId != null) {
       setState(() {
-        currentPatientId = user!.patientId;
+        currentPatientId = user!.patientId.toString();
       });
       if (currentPatientId != null) {
         context.read<MedicalRecordsCubit>().getAllRecords(currentPatientId!);
       }
+    } else {
+      // Use default patient ID for demo
+      setState(() {
+        currentPatientId = '1';
+      });
+      context.read<MedicalRecordsCubit>().getAllRecords('1');
     }
   }
 

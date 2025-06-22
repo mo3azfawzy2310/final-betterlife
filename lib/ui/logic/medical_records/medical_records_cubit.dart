@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:better_life/core/services/user_service.dart';
+import 'package:better_life/core/services/medical_records_service.dart';
 import 'package:better_life/models/medical_record_model.dart';
 import 'package:better_life/models/radiation_model.dart';
 
@@ -8,37 +8,62 @@ part 'medical_records_state.dart';
 class MedicalRecordsCubit extends Cubit<MedicalRecordsState> {
   MedicalRecordsCubit() : super(MedicalRecordsInitial());
 
-  // Get medical records
-  Future<void> getMedicalRecords(int patientId) async {
+  // Get all records (medical + radiation) for a patient
+  Future<void> getAllRecords(String patientId) async {
+    emit(AllRecordsLoading());
+    try {
+      final medicalRecords = await MedicalRecordsService.getMedicalRecords(patientId);
+      final radiationRecords = await MedicalRecordsService.getRadiationRecords(patientId);
+      
+      emit(AllRecordsLoaded(medicalRecords, radiationRecords));
+    } catch (e) {
+      emit(AllRecordsError(e.toString()));
+    }
+  }
+
+  // Get only medical records
+  Future<void> getMedicalRecords(String patientId) async {
     emit(MedicalRecordsLoading());
     try {
-      final records = await UserService.getMedicalRecords(patientId);
+      final records = await MedicalRecordsService.getMedicalRecords(patientId);
       emit(MedicalRecordsLoaded(records));
     } catch (e) {
       emit(MedicalRecordsError(e.toString()));
     }
   }
 
-  // Get radiation records
-  Future<void> getRadiationRecords(int patientId) async {
+  // Get only radiation records
+  Future<void> getRadiationRecords(String patientId) async {
     emit(RadiationRecordsLoading());
     try {
-      final records = await UserService.getRadiationRecords(patientId);
+      final records = await MedicalRecordsService.getRadiationRecords(patientId);
       emit(RadiationRecordsLoaded(records));
     } catch (e) {
       emit(RadiationRecordsError(e.toString()));
     }
   }
 
-  // Get both medical and radiation records
-  Future<void> getAllRecords(int patientId) async {
-    emit(AllRecordsLoading());
+  // Get a specific medical record by ID
+  Future<void> getMedicalRecordById(String recordId) async {
+    emit(MedicalRecordLoading());
     try {
-      final medicalRecords = await UserService.getMedicalRecords(patientId);
-      final radiationRecords = await UserService.getRadiationRecords(patientId);
-      emit(AllRecordsLoaded(medicalRecords, radiationRecords));
+      final allRecords = await MedicalRecordsService.getMedicalRecords('1'); // Assuming patient ID 1
+      final record = allRecords.firstWhere((record) => record.id == recordId);
+      emit(MedicalRecordLoaded(record));
     } catch (e) {
-      emit(AllRecordsError(e.toString()));
+      emit(MedicalRecordError(e.toString()));
+    }
+  }
+
+  // Get a specific radiation record by ID
+  Future<void> getRadiationRecordById(String recordId) async {
+    emit(RadiationRecordLoading());
+    try {
+      final allRecords = await MedicalRecordsService.getRadiationRecords('1'); // Assuming patient ID 1
+      final record = allRecords.firstWhere((record) => record.id == recordId);
+      emit(RadiationRecordLoaded(record));
+    } catch (e) {
+      emit(RadiationRecordError(e.toString()));
     }
   }
 } 

@@ -8,6 +8,7 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/authProvider.dart';
 import '../../../utils/ButtonStyles.dart';
+import '../../../utils/dialog_utils.dart';
 import '../../home/homeScreen.dart';
 import '../buildTextField.dart';
 
@@ -36,7 +37,10 @@ class _LoginScreenState extends State<LoginScreen> {
         listener: (context, state) {
           if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Email or password is incorrect")),
+              SnackBar(
+                content: Text("Authentication failed: ${state.message}"),
+                backgroundColor: Colors.red,
+              ),
             );
           }
           if (state is AuthSuccess) {
@@ -139,9 +143,19 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: ElevatedButton(
                             onPressed: () async {
                               if (formKey.currentState!.validate()) {
-                                context.read<AuthCubit>().loginUser(
-                                    email: emailController.text,
-                                    password: passwordController.text);
+                                try {
+                                  await context.read<AuthCubit>().loginUser(
+                                      email: emailController.text,
+                                      password: passwordController.text);
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    DialogUtils.showErrorDialog(
+                                      context: context,
+                                      title: 'Login Failed',
+                                      message: e.toString(),
+                                    );
+                                  }
+                                }
                               }
                             },
                             style: ButtonStyles.primaryButtonStyle,
@@ -202,9 +216,24 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                         const SizedBox(height: 20),
-                        buildSocialButtons(
-                          text: "Sign in with Google",
-                          icon: "assets/images/icons/google_icon.png",
+                        InkWell(
+                          onTap: () async {
+                            try {
+                              await context.read<AuthCubit>().signInWithGoogle();
+                            } catch (e) {
+                              if (context.mounted) {
+                                DialogUtils.showErrorDialog(
+                                  context: context,
+                                  title: 'Google Sign-In Failed',
+                                  message: e.toString(),
+                                );
+                              }
+                            }
+                          },
+                          child: buildSocialButtons(
+                            text: "Sign in with Google",
+                            icon: "assets/images/icons/google_icon.png",
+                          ),
                         ),
                         const SizedBox(height: 15),
                         buildSocialButtons(

@@ -1,107 +1,126 @@
 import 'package:flutter/material.dart';
 
 class DialogUtils {
-  static void showSuccessDialog({
+  // Show error dialog
+  static Future<void> showErrorDialog({
     required BuildContext context,
     required String title,
     required String message,
-    required String buttonText,
-    required String routeName,
-  }) {
-    showDialog(
+  }) async {
+    return showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
+      builder: (context) => AlertDialog(
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: Colors.red,
+            fontWeight: FontWeight.bold,
           ),
-          child: Container(
-            width: 327,
-            height: 401,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 30),
-                Container(
-                  padding: const EdgeInsets.all(15),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFF5F8FF),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.check,
-                      color: Color(0xFF199A8E), size: 50),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  title,
-                  style: const TextStyle(
-                      fontSize: 22, fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  message,
-                  style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black54),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 30),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.pushReplacementNamed(context, routeName);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF199A8E),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    child: Text(buttonText,
-                        style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white)),
-                  ),
-                ),
-              ],
-            ),
+        ),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 
-  static void showErrorDialog(BuildContext context, String message) {
-    showDialog(
+  // Show success dialog
+  static Future<void> showSuccessDialog({
+    required BuildContext context,
+    required String title,
+    required String message,
+    VoidCallback? onDismiss,
+  }) async {
+    return showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: Colors.green,
+            fontWeight: FontWeight.bold,
           ),
-          title: const Text('Error'),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
+        ),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              if (onDismiss != null) {
+                onDismiss();
+              }
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
     );
+  }
+
+  // Show confirmation dialog
+  static Future<bool> showConfirmationDialog({
+    required BuildContext context,
+    required String title,
+    required String message,
+    String confirmText = 'Yes',
+    String cancelText = 'No',
+  }) async {
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(cancelText),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(
+              confirmText,
+              style: const TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    
+    return result ?? false;
+  }
+
+  // Show loading dialog
+  static Future<void> showLoadingDialog({
+    required BuildContext context,
+    String message = 'Please wait...',
+  }) async {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        content: Row(
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(width: 20),
+            Expanded(child: Text(message)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Hide loading dialog
+  static void hideLoadingDialog(BuildContext context) {
+    Navigator.of(context, rootNavigator: true).pop();
   }
 }

@@ -1,5 +1,7 @@
 import 'package:better_life/ui/home/HomeMainScreen/FindDoctorsScreen.dart';
+import 'package:better_life/ui/logic/doctors/doctors_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Search_Container extends StatelessWidget {
@@ -13,7 +15,10 @@ class Search_Container extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return const FindDoctorsScreen();
+          return BlocProvider(
+            create: (context) => DoctorsCubit()..getAllDoctors(),
+            child: const FindDoctorsScreen(),
+          );
         }));
       },
       child: Container(

@@ -5,6 +5,7 @@ import 'package:better_life/ui/home/homeScreen.dart';
 import 'package:better_life/ui/logic/auth/auth_cubit.dart';
 import 'package:better_life/ui/login_signup/buildTextField.dart';
 import 'package:better_life/utils/ButtonStyles.dart';
+import 'package:better_life/utils/dialog_utils.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -60,10 +61,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
           if (state is AuthFailure) {
             log("Error during registration: ${state.message}");
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Error please try again")),
+              SnackBar(
+                content: Text("Registration failed: ${state.message}"),
+                backgroundColor: Colors.red,
+              ),
             );
           }
           if (state is AuthSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Registration successful!"),
+                backgroundColor: Colors.green,
+              ),
+            );
             Navigator.pushReplacementNamed(context, HomeScreen.routeName);
           }
         },
@@ -98,6 +108,57 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     autovalidateMode: autoValidateMode,
                     child: Column(
                       children: [
+                        // Google Sign Up Button
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton.icon(
+                            icon: Image.asset(
+                              "assets/images/icons/google_icon.png",
+                              height: 24,
+                            ),
+                            label: Text(
+                              "Sign up with Google",
+                              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                color: Colors.black87,
+                              ),
+                            ),
+                            onPressed: () async {
+                              try {
+                                await context.read<AuthCubit>().signInWithGoogle();
+                              } catch (e) {
+                                if (context.mounted) {
+                                  DialogUtils.showErrorDialog(
+                                    context: context,
+                                    title: 'Google Sign-Up Failed',
+                                    message: e.toString(),
+                                  );
+                                }
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                side: BorderSide(color: Colors.grey.shade300),
+                              ),
+                            ),
+                          ),
+                        ),
+                        
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(child: Divider()),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              child: Text("OR", style: TextStyle(color: Colors.grey)),
+                            ),
+                            Expanded(child: Divider()),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        
                         BuildTextField(
                           label: "Enter your Name",
                           icon: Icons.person,
@@ -260,6 +321,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             if (value == null || value.trim().isEmpty) {
                               return "Password is required";
                             }
+                            if (value.length < 6) {
+                              return "Password must be at least 6 characters";
+                            }
                             return null;
                           },
                           toggleObscure: () {
@@ -348,7 +412,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           height: 50,
                           child: ElevatedButton(
                             onPressed: isButtonEnabled
-                                ? () {
+                                ? () async {
                                     setState(() {
                                       autoValidateMode =
                                           AutovalidateMode.always;
@@ -356,24 +420,34 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     if (formKey.currentState?.validate() ==
                                             true &&
                                         isChecked) {
-                                      context.read<AuthCubit>().registerUser(
-                                            RegisterRequestModel(
-                                                phoneNumber:
-                                                    phoneController.text,
-                                                role: "Patient",
-                                                userName:
-                                                    usernameController.text,
-                                                password:
-                                                    passwordController.text,
-                                                email: emailController.text,
-                                                displayName:
-                                                    nameController.text,
-                                                address: addressController.text,
-                                                birthDate:
-                                                    birthDateController.text,
-                                                gender: selectedGender ?? "",
-                                                name: nameController.text),
+                                      try {
+                                        await context.read<AuthCubit>().registerUser(
+                                              RegisterRequestModel(
+                                                  phoneNumber:
+                                                      phoneController.text,
+                                                  role: "Patient",
+                                                  userName:
+                                                      usernameController.text,
+                                                  password:
+                                                      passwordController.text,
+                                                  email: emailController.text,
+                                                  displayName:
+                                                      nameController.text,
+                                                  address: addressController.text,
+                                                  birthDate:
+                                                      birthDateController.text,
+                                                  gender: selectedGender ?? "",
+                                                  name: nameController.text),
+                                            );
+                                      } catch (e) {
+                                        if (context.mounted) {
+                                          DialogUtils.showErrorDialog(
+                                            context: context,
+                                            title: 'Registration Failed',
+                                            message: e.toString(),
                                           );
+                                        }
+                                      }
                                     }
                                   }
                                 : null,

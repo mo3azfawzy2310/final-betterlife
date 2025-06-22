@@ -52,6 +52,55 @@ class DoctorModel {
   }
 }
 
+// article_model.dart
+class ArticleModel {
+  final String id;
+  final String title;
+  final String content;
+  final String date;
+  final String category;
+  final String readTime;
+  final String imageUrl;
+  final String? authorName;
+
+  ArticleModel({
+    required this.id,
+    required this.title,
+    required this.content,
+    required this.date,
+    required this.category,
+    required this.readTime,
+    required this.imageUrl,
+    this.authorName,
+  });
+
+  factory ArticleModel.fromJson(Map<String, dynamic> json) {
+    return ArticleModel(
+      id: json['id'] ?? '',
+      title: json['title'] ?? '',
+      content: json['content'] ?? '',
+      date: json['date'] ?? '',
+      category: json['category'] ?? '',
+      readTime: json['readTime'] ?? '',
+      imageUrl: json['imageUrl'] ?? '',
+      authorName: json['authorName'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'content': content,
+      'date': date,
+      'category': category,
+      'readTime': readTime,
+      'imageUrl': imageUrl,
+      'authorName': authorName,
+    };
+  }
+}
+
 // health_article_model.dart
 class HealthArticleModel {
   final String id;
